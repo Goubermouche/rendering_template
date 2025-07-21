@@ -1,12 +1,8 @@
 workspace "workspace"
     location "."
     configurations { "Debug", "Release" }
-    platforms { "Win32", "x64" }
+    platforms { "x64" }
 
-    filter { "platforms:Win32" }
-        system "Windows"
-        architecture "x86"
-    
     filter { "platforms:x64" }
         system "Windows"
         architecture "x64"
@@ -22,6 +18,7 @@ project "project"
     files { 
         "./src/**.h", 
         "./src/**.cpp",
+        "./dep/glad/src/glad.c",
         "./dep/imgui/*.cpp",
         "./dep/imgui/backends/imgui_impl_glfw.cpp",
         "./dep/imgui/backends/imgui_impl_opengl3.cpp"
@@ -29,27 +26,19 @@ project "project"
 
     includedirs {
         "./dep/glfw/include",
-        "./dep/glew/include",
+        "./dep/glad/include",
         "./dep/imgui",
         "./dep/imgui/backends"
     }
 
     links {
-        "glew32",
         "opengl32",
         "glfw3"
     }
 
-    filter "architecture:x86"
-        libdirs { 
-            "./dep/glfw/win32/lib",
-            "./dep/glew/win32/lib"
-        }
-
     filter "architecture:x64"
         libdirs { 
             "./dep/glfw/x64/lib",
-            "./dep/glew/x64/lib"
         }
 
     filter "configurations:Debug"

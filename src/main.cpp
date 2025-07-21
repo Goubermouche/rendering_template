@@ -1,50 +1,61 @@
-#include <GL/glew.h>
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 #include <iostream>
 
-int main() {
-	// Initialize GLFW
+GLFWwindow* window = nullptr;
+
+int init_glfw() {
 	if(!glfwInit()) {
-		std::cerr << "Failed to initialize GLFW" << std::endl;
-		return -1;
+			std::cerr << "failed to initialize GLFW" << std::endl;
+			return 1;
 	}
 
-	// Create a window
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	GLFWwindow* window = glfwCreateWindow(1280, 720, "Minimal ImGui Example", nullptr, nullptr);
-	if(!window) {
-		glfwTerminate();
-		std::cerr << "Failed to create GLFW window" << std::endl;
-		return -1;
+	{
+		window = glfwCreateWindow(800, 200, "app", nullptr, nullptr);
 	}
+
+	if(window == nullptr) {
+		std::cerr << "failed to create GLFW window" << std::endl;
+		glfwTerminate();
+		return 1;
+	}
+
 	glfwMakeContextCurrent(window);
+	glfwSwapInterval(0);
 
-	// Initialize GLEW
-	if(glewInit() != GLEW_OK) {
-		std::cerr << "Failed to initialize GLEW" << std::endl;
-		glfwDestroyWindow(window);
+	return 0;
+}
+
+int init_glew() {
+	if(!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+		std::cerr << "failed to initialize GLAD" << std::endl;
 		glfwTerminate();
-		return -1;
+		return 1;
 	}
 
-	// Initialize ImGui
+	return 0;
+}
+
+int init_imgui() {
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO();
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable keyboard controls
-	// io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;  // Enable docking (if using docking branch)
-
-	// Setup ImGui style
 	ImGui::StyleColorsDark();
-
-	// Setup Platform/Renderer backends
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
 	ImGui_ImplOpenGL3_Init("#version 330");
+
+	return 0;
+}
+
+int main() {
+	if(init_glfw()) { return 1; }
+	if(init_glew()) { return 1; }
+	if(init_imgui()) { return 1; }
 
 	// Main loop
 	while(!glfwWindowShouldClose(window)) {
